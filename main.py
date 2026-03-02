@@ -8,19 +8,32 @@ dp = Dispatcher()
 
 @dp.message()
 async def echo_message(message: types.Message):
-    await bot.send_message(chat_id=message.chat.id, text='Start procesing...') #простое сообщение
-    await bot.send_message(                     #простое сообщение
-        chat_id=message.chat.id,
-        text='Wait a second...',
-        reply_to_message_id=message.message_id,         #указываем на какое сообщ ответить с упоминанием его
-    )
+    # await bot.send_message(chat_id=message.chat.id, text='Start procesing...') #простое сообщение
+    # await bot.send_message(                     #простое сообщение
+    #     chat_id=message.chat.id,
+    #     text='Wait a second...',
+    #     reply_to_message_id=message.message_id,         #указываем на какое сообщ ответить с упоминанием его
+    # )
+    #
+    # await message.answer(text=message.text) #простой ответ
 
-    await message.answer(text=message.text) #простой ответ
-    await message.reply(text=message.text)  #ответ с указанием на что отвечаем
+#     проверка или есть текст
+    if message.text:
+        await message.reply(text=message.text)  #ответ с указанием на что отвечаем
+    elif message.sticker:
+        await message.reply_sticker(sticker=message.sticker.file_id)
+
+        await message.bot.send_sticker(         #простая отправка стикера
+            chat_id=message.chat.id,
+            sticker=message.sticker.file_id,
+        )
+    else:
+        await message.reply(text='что это?')  # ответ с указанием на что отвечаем
+
 
 
 async def main():
-    logging.basicConfig(level=logging.INFO) #что б видеть все логи, DEBUG или INFO
+    logging.basicConfig(level=logging.INFO)  #что б видеть все логи, DEBUG или INFO
     await dp.start_polling(bot)    #опрашиваем телегу на наличие сообщений. в start_polling можно передавать несколько ботов!
 
 
